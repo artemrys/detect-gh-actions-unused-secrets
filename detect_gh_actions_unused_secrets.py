@@ -9,16 +9,22 @@ import requests
 
 
 def get_secret_names(token: str, repo: str) -> List[str]:
-    response = requests.get(
-        f"https://api.github.com/repos/{repo}/actions/secrets",
-        headers={
-            "Accept": "application/vnd.github.v3+json",
-            "Authorization": f"token {token}",
-        },
-    )
     secret_names = []
-    for secret in response.json()["secrets"]:
-        secret_names.append(secret["name"])
+    page = 1
+    while True:
+        response = requests.get(
+            f"https://api.github.com/repos/{repo}/actions/secrets?page={page}",
+            headers={
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": f"token {token}",
+            },
+        )
+        total_count = response.json()["total_count"]
+        for secret in response.json()["secrets"]:
+            secret_names.append(secret["name"])
+        if len(secret_names) == total_count:
+            break
+        page += 1
     return secret_names
 
 
