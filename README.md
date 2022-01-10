@@ -17,5 +17,8 @@ What it does:
 ## Example
 
 ```console
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 python detect_gh_actions_unused_secrets.py <token> <owner>/<repo1> <owner/repo2>
 ```
