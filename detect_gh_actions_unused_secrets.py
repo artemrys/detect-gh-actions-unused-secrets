@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 import tempfile
-from typing import List
+from typing import List, Tuple
 
 import requests
 
@@ -39,16 +39,20 @@ def get_github_actions_files(repo_path: str) -> List[str]:
     return result
 
 
-def find_secrets_usages(filepaths: str, secret: str) -> List[str]:
+def find_secrets_usages(filepaths: str, secret: str) -> List[Tuple[str, int]]:
     regex = fr"\${{{{\s*secrets\.{secret}\s*}}}}"
     secret_re = re.compile(regex)
     result = []
     for filepath in filepaths:
         with open(filepath) as f:
-            content = f.read()
-            if secret_re.search(content) is not None:
-                result.append(filepath)
+            for i, line in enumerate(f.readlines(), 1):
+                if secret_re.search(line) is not None:
+                    result.append((filepath, i))
     return result
+
+
+def _strip_tmp_path(path: str, tmp_path: str) -> str:
+    return os.path.relpath(path, tmp_path)
 
 
 def main():
@@ -57,7 +61,7 @@ def main():
     parser.add_argument("repos", nargs="*")
     args = parser.parse_args()
     for repo in args.repos:
-        print(f"Processing {repo}")
+        print(repo)
         secret_names = get_secret_names(args.token, repo)
         print(f"\t{repo} has secrets {secret_names}")
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -80,7 +84,11 @@ def main():
                 if not secret_used_in_files:
                     print(f"\t{secret} is not used anywhere!")
                 else:
-                    print(f"\t{secret} is used in {secret_used_in_files}")
+                    for filepath, line_no in secret_used_in_files:
+                        relative_filepath = _strip_tmp_path(filepath, tmpdir)
+                        print(
+                            f"\t{secret} is used in {relative_filepath}, line {line_no}"
+                        )
 
 
 if __name__ == "__main__":
