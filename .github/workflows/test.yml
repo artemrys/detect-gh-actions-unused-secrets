@@ -1,0 +1,15 @@
+name: tests
+on: [pull_request]
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest tests
+        env:
+          GH_TOKEN_INTEGRATION_TEST: ${{ secrets.GH_TOKEN_INTEGRATION_TEST }}
