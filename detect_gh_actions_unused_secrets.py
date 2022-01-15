@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 import tempfile
-from typing import List, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import requests
 
@@ -39,7 +39,7 @@ def get_github_actions_files(repo_path: str) -> List[str]:
     return result
 
 
-def find_secrets_usages(filepaths: str, secret: str) -> List[Tuple[str, int]]:
+def find_secrets_usages(filepaths: List[str], secret: str) -> List[Tuple[str, int]]:
     regex = fr"\${{{{\s*secrets\.{secret}\s*}}}}"
     secret_re = re.compile(regex)
     result = []
@@ -55,15 +55,15 @@ def _strip_tmp_path(path: str, tmp_path: str) -> str:
     return os.path.relpath(path, tmp_path)
 
 
-def main():
+def main(argv: Optional[Sequence[str]] = None):
     parser = argparse.ArgumentParser()
     parser.add_argument("token", type=str)
     parser.add_argument("repos", nargs="*")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     for repo in args.repos:
         print(repo)
         secret_names = get_secret_names(args.token, repo)
-        print(f"\t{repo} has secrets {secret_names}")
+        print(f"\tSecrets {secret_names}")
         with tempfile.TemporaryDirectory() as tmpdir:
             subprocess.call(
                 (
@@ -78,7 +78,11 @@ def main():
                 stderr=subprocess.DEVNULL,
             )
             github_actions_files = get_github_actions_files(tmpdir)
-            print(f"\t{repo} has Github actions files {github_actions_files}")
+            for github_action_file in github_actions_files:
+                relative_path = _strip_tmp_path(github_action_file, tmpdir)
+                print(f"\tGithub Actions file {relative_path}")
+            if not github_actions_files:
+                print("\tThere are no Github Actions files")
             for secret in secret_names:
                 secret_used_in_files = find_secrets_usages(github_actions_files, secret)
                 if not secret_used_in_files:
