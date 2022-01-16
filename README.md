@@ -34,4 +34,4 @@ Option to generate a text file with `curl`s to delete all unused secrets in the 
 detect-gh-actions-unused-secrets <token> <owner>/<repo1> --generate-curls
 ```
 
-This command will produce a file called `curls.sh` that will contain line-by-line `curl` commands to delete all unused secrets in <owner>/<repo1> repository. [This](https://docs.github.com/en/rest/reference/actions#delete-a-repository-secret) endpoint will be utilized.
+This command will produce a file called `curls.sh` that will contain line-by-line `curl` commands to delete all unused secrets in `<owner>/<repo1>` repository. [This](https://docs.github.com/en/rest/reference/actions#delete-a-repository-secret) endpoint will be utilized.
