@@ -8,6 +8,13 @@ from typing import List, Optional, Sequence, Tuple
 import requests
 
 
+def generate_curl(token: str, repo: str, unused_secret: str) -> str:
+    _start = 'curl -X DELETE -H "Accept: application/vnd.github.v3+json"'
+    _token = f'-H "Authorization: token {token}"'
+    _api = f"https://api.github.com/repos/{repo}/actions/secrets/{unused_secret}"
+    return " ".join([_start, _token, _api])
+
+
 def get_secret_names(token: str, repo: str) -> List[str]:
     secret_names = []
     page = 1
@@ -59,6 +66,8 @@ def main(argv: Optional[Sequence[str]] = None):
     parser = argparse.ArgumentParser()
     parser.add_argument("token", type=str)
     parser.add_argument("repos", nargs="*")
+    parser.add_argument("--generate-curls", action="store_true")
+    curls = []
     args = parser.parse_args(argv)
     for repo in args.repos:
         print(repo)
@@ -86,6 +95,8 @@ def main(argv: Optional[Sequence[str]] = None):
             for secret in secret_names:
                 secret_used_in_files = find_secrets_usages(github_actions_files, secret)
                 if not secret_used_in_files:
+                    if args.generate_curls:
+                        curls.append(generate_curl(args.token, repo, secret))
                     print(f"\t{secret} is not used anywhere!")
                 else:
                     for filepath, line_no in secret_used_in_files:
@@ -93,6 +104,10 @@ def main(argv: Optional[Sequence[str]] = None):
                         print(
                             f"\t{secret} is used in {relative_filepath}, line {line_no}"
                         )
+    if curls:
+        with open("curls.sh", "w") as f:
+            for curl in curls:
+                f.write(curl + "\n")
 
 
 if __name__ == "__main__":
