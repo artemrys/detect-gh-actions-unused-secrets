@@ -1,11 +1,11 @@
 name: tests
-on: [pull_request]
+on: [ pull_request ]
 jobs:
   integration:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # pin@v2
+      - uses: actions/setup-python@f38219332975fe8f9c04cca981d674bf22aea1d3 # pin@v2
         with:
           python-version: "3.9"
           cache: "pip"
