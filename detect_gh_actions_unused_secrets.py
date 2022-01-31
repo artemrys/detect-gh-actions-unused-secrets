@@ -50,7 +50,7 @@ def get_github_actions_files(repo_path: str) -> List[str]:
 
 
 def find_secrets_usages(filepaths: List[str], secret: str) -> List[Tuple[str, int]]:
-    regex = fr"\${{{{\s*secrets\.{secret}\s*}}}}"
+    regex = rf"\${{{{\s*secrets\.{secret}\s*}}}}"
     secret_re = re.compile(regex)
     result = []
     for filepath in filepaths:
