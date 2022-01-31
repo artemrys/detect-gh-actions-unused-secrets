@@ -1,11 +1,11 @@
 import argparse
+import json
 import os
 import re
 import subprocess
 import tempfile
+import urllib.request
 from typing import List, Optional, Sequence, Tuple
-
-import requests
 
 
 def generate_curl(token: str, repo: str, unused_secret: str) -> str:
@@ -19,15 +19,18 @@ def get_secret_names(token: str, repo: str) -> List[str]:
     secret_names = []
     page = 1
     while True:
-        response = requests.get(
-            f"https://api.github.com/repos/{repo}/actions/secrets?page={page}",
-            headers={
-                "Accept": "application/vnd.github.v3+json",
-                "Authorization": f"token {token}",
-            },
+        response = urllib.request.urlopen(
+            urllib.request.Request(
+                f"https://api.github.com/repos/{repo}/actions/secrets?page={page}",
+                headers={
+                    "Accept": "application/vnd.github.v3+json",
+                    "Authorization": f"token {token}",
+                },
+            )
         )
-        total_count = response.json()["total_count"]
-        for secret in response.json()["secrets"]:
+        response_json = json.load(response)
+        total_count = response_json["total_count"]
+        for secret in response_json["secrets"]:
             secret_names.append(secret["name"])
         if len(secret_names) == total_count:
             break
