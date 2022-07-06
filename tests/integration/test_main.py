@@ -4,7 +4,7 @@ from detect_gh_actions_unused_secrets import main
 
 
 def test_main(capsys):
-    expected_output = """artemrys/detect-gh-actions-unused-secrets
+    expected_output = """artemrys/detect-gh-actions-unused-secrets-demo
 \tSecrets ['UNUSED_SECRET_1', 'UNUSED_SECRET_2', 'USED_SECRET_KEY']
 \tGithub Actions file .github/workflows/main.yml
 \tUNUSED_SECRET_1 is not used anywhere!
@@ -14,7 +14,7 @@ def test_main(capsys):
     main(
         (
             os.getenv("GH_TOKEN_INTEGRATION_TEST"),
-            "artemrys/detect-gh-actions-unused-secrets",
+            "artemrys/detect-gh-actions-unused-secrets-demo",
         )
     )
     captured = capsys.readouterr()
