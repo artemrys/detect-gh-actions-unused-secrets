@@ -65,7 +65,7 @@ def _strip_tmp_path(path: str, tmp_path: str) -> str:
     return os.path.relpath(path, tmp_path)
 
 
-def main(argv: Optional[Sequence[str]] = None):
+def main(argv: Optional[Sequence[str]] = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("token", type=str)
     parser.add_argument("repos", nargs="*")
@@ -92,9 +92,9 @@ def main(argv: Optional[Sequence[str]] = None):
             github_actions_files = get_github_actions_files(tmpdir)
             for github_action_file in github_actions_files:
                 relative_path = _strip_tmp_path(github_action_file, tmpdir)
-                print(f"\tGithub Actions file {relative_path}")
+                print(f"\tGitHub Actions file {relative_path}")
             if not github_actions_files:
-                print("\tThere are no Github Actions files")
+                print("\tThere are no GitHub Actions files")
             for secret in secret_names:
                 secret_used_in_files = find_secrets_usages(github_actions_files, secret)
                 if not secret_used_in_files:
