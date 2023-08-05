@@ -34,3 +34,4 @@ repos:
     rev: v2.4.0
     hooks:
     -   id: setup-cfg-fmt
+        args: [--include-version-classifiers, --min-py-version=3.7]
