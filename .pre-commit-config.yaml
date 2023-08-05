@@ -9,13 +9,13 @@ repos:
     -   id: check-merge-conflict
     -   id: debug-statements
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v3.7.0
+    rev: v3.10.1
     hooks:
     -   id: pyupgrade
         args:
         - --py37-plus
 -   repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
     -   id: black
 -   repo: https://github.com/PyCQA/isort
@@ -27,10 +27,11 @@ repos:
     hooks:
     -   id: mypy
 -   repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
     -   id: flake8
 -   repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
     -   id: setup-cfg-fmt
+        args: [--include-version-classifiers, --min-py-version=3.7]
